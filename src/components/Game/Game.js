@@ -4,6 +4,7 @@ import { range, sample } from '../../utils';
 import { WORDS } from '../../data';
 import Form from '../Form';
 import GuessList from '../GuessList/GuessList';
+import { NUM_OF_GUESSES_ALLOWED } from '../../constants';
 
 // Pick a random word on every pageload.
 const answer = sample(WORDS);
@@ -12,7 +13,7 @@ console.info({ answer });
 
 function Game() {
   const [guesses, setGuesses] = useState(() => (
-    range(0, 6).map((e) => {
+    range(0, NUM_OF_GUESSES_ALLOWED).map((e) => {
       return {
         id: e,
         value: '',
@@ -20,10 +21,9 @@ function Game() {
     })
   ))
 
-  const [showWinAlert, setShowWinAlert] = useState(false)
-  const [showLoserAlert, setShowLoserAlert] = useState(false)
+  const [gameStatus, setGameStatus] = useState("running")
 
-  const addGuess = (guess) => {
+  const handleSubmitGuess = (guess) => {
     const newGuess = {
       value: guess
     }
@@ -35,16 +35,16 @@ function Game() {
 
     setGuesses(nextGuesses)
 
-    if (guess === answer) setShowWinAlert(true)
-    else if (nextElement === 5) setShowLoserAlert(true)
+    if (guess === answer) setGameStatus("won")
+    else if (nextElement === 5) setGameStatus("lost")
 
   }
 
   return (
     <>
       <GuessList guesses={guesses} answer={answer} />
-      <Form onSave={addGuess} disabled={showLoserAlert || showWinAlert} />
-      {showWinAlert && <div className='happy banner'>
+      <Form handleSubmitGuess={handleSubmitGuess} disabled={gameStatus !== "running"} />
+      {gameStatus === "won" && <div className='happy banner'>
         <p>
           <strong>Congratulations!</strong> Got it in
           <strong>{` ${guesses.findIndex((e) => e.value === answer) + 1} guesses`}</strong>
@@ -52,7 +52,7 @@ function Game() {
       </div>}
 
       {
-        showLoserAlert && <div className='sad banner'>
+        gameStatus === "lost" && <div className='sad banner'>
           <p>sorry, the correct answer is <strong>{answer}</strong>.</p>
         </div>
       }

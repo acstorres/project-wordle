@@ -1,6 +1,5 @@
 import React from 'react';
 import { range } from '../../utils';
-import { NUM_OF_GUESSES_ALLOWED } from './../../constants'
 import { checkGuess } from './../../game-helpers'
 
 function GuessList({ guesses, answer }) {
@@ -14,7 +13,7 @@ function GuessList({ guesses, answer }) {
             guess.value ? Array.from(guessWithStatus(guess.value)).map(({ letter, status }) => (
               <span className={`cell ${status}`} key={crypto.randomUUID()}>{letter}</span>
             ))
-              : range(0, NUM_OF_GUESSES_ALLOWED).map((space) => (
+              : range(0, 5).map((space) => (
                 <span className='cell' key={crypto.randomUUID()} />
               ))
           }
